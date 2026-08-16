@@ -1,0 +1,19 @@
+# Assets descargados por scripts/fetch_assets.py. El repo no guarda binarios.
+mdreader/assets/vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+
+# Entornos
+.venv/
+venv/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*~

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mdreader"
+version = "0.1.0"
+description = "Lector de Markdown de escritorio: indice, navegacion entre documentos y render fiel."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  { name = "Ezer Vidarte" }
+]
+dependencies = [
+  "markdown-it-py>=4.0",
+  "mdit-py-plugins>=0.6",
+  "linkify-it-py>=2.0",
+  "Pygments>=2.17",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+# QtWebEngine vive en PySide6-Addons, NO en PySide6-Essentials. El render fiel
+# (flexbox, KaTeX, Mermaid) necesita el motor de Chromium, asi que aca no
+# alcanza con Essentials como en aws-manager/redirect.
+#
+# En Fedora conviene el RPM `python3-pyside6`, que ya trae QtWebEngineWidgets
+# y usa el Qt del sistema: evita bajar ~175 MB de PySide6-Addons por pip.
+# scripts/install_ui.sh lo prefiere y cae a pip solo si no esta.
+ui = ["PySide6>=6.6"]
+
+[project.scripts]
+mdreader = "mdreader_ui.app:main"
+
+[tool.setuptools.packages.find]
+include = ["mdreader*"]
+
+[tool.setuptools.package-data]
+mdreader = ["assets/*.css", "assets/*.js", "assets/vendor/*", "assets/vendor/fonts/*"]

@@ -1,0 +1,406 @@
+/* Hoja de estilo del lector.
+ *
+ * El layout es scroll continuo sobre una "hoja" centrada. La paginacion real
+ * (alto fijo, cortes controlados) entraria como un stylesheet adicional que
+ * redefine .paper, sin tocar el HTML que genera render.py.
+ */
+
+/* ===== Tema ============================================================== */
+
+:root {
+  --bg: #f2f2f4;
+  --paper: #ffffff;
+  --paper-shadow: rgba(0, 0, 0, 0.10);
+  --ink: #1f2328;
+  --ink-soft: #5b6470;
+  --ink-faint: #868f9b;
+  --rule: #e2e5e9;
+  --rule-strong: #ccd2d9;
+  --accent: #2f6feb;
+  --accent-soft: rgba(47, 111, 235, 0.10);
+  --code-bg: #f5f6f8;
+  --code-ink: #24292f;
+  --quote-bar: #d5dae0;
+  --mark: #fff3c4;
+  --danger: #b42318;
+  --warn-bg: #fff8e6;
+  --warn-rule: #f0d089;
+  --target: rgba(47, 111, 235, 0.14);
+
+  --paper-width: 46rem;
+  --body-size: 16.5px;
+  --line: 1.72;
+  --font-body: system-ui, "Cantarell", "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "MesloLGS NF", "JetBrains Mono", "Fira Code", ui-monospace,
+    "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+:root[data-theme="dark"] {
+  --bg: #131417;
+  --paper: #1b1d21;
+  --paper-shadow: rgba(0, 0, 0, 0.45);
+  --ink: #e3e6ea;
+  --ink-soft: #a8b0ba;
+  --ink-faint: #7d8792;
+  --rule: #2c3036;
+  --rule-strong: #3b4046;
+  --accent: #6ea8fe;
+  --accent-soft: rgba(110, 168, 254, 0.14);
+  --code-bg: #16181c;
+  --code-ink: #d7dbe0;
+  --quote-bar: #3b4046;
+  --mark: #4d4322;
+  --danger: #ff7b72;
+  --warn-bg: #2a2418;
+  --warn-rule: #5c4d2a;
+  --target: rgba(110, 168, 254, 0.18);
+}
+
+/* ===== Base ============================================================== */
+
+* { box-sizing: border-box; }
+
+html {
+  /* El scroll suave hace que saltar por el indice se lea como navegacion
+   * y no como un corte. scroll-padding evita que el heading quede pegado
+   * al borde superior al saltar. */
+  scroll-behavior: smooth;
+  scroll-padding-top: 1.5rem;
+}
+
+body {
+  margin: 0;
+  padding: 2.5rem 1.5rem 6rem;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  line-height: var(--line);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.paper {
+  max-width: var(--paper-width);
+  margin: 0 auto;
+  padding: 3.25rem 3.5rem 4rem;
+  background: var(--paper);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px var(--paper-shadow), 0 8px 24px var(--paper-shadow);
+}
+
+/* Con ancho completo la hoja se vuelve el viewport: util en monitores
+ * chicos o para tablas anchas. Lo togglea la UI. */
+body.full-width .paper {
+  max-width: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ===== Tipografia ======================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 2.2em 0 0.7em;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.011em;
+  scroll-margin-top: 1.5rem;
+}
+
+h1:first-child, h2:first-child, h3:first-child { margin-top: 0; }
+
+h1 { font-size: 2.05em; font-weight: 700; letter-spacing: -0.021em; }
+h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--rule);
+}
+h3 { font-size: 1.22em; }
+h4 { font-size: 1.05em; }
+h5 { font-size: 0.95em; color: var(--ink-soft); }
+h6 { font-size: 0.88em; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+
+p { margin: 0 0 1.15em; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+a:hover { border-bottom-color: currentColor; }
+
+/* Un link a otro .md se navega adentro del lector: se marca distinto para
+ * que se note que no abre el navegador. */
+a[data-internal] { border-bottom: 1px dotted currentColor; }
+a[data-internal]:hover { background: var(--accent-soft); }
+
+strong { font-weight: 650; }
+mark { background: var(--mark); color: inherit; padding: 0.05em 0.2em; border-radius: 3px; }
+hr { height: 1px; border: 0; background: var(--rule); margin: 2.5em 0; }
+small { font-size: 0.86em; color: var(--ink-soft); }
+abbr[title] { text-decoration: underline dotted; cursor: help; }
+
+/* Resalta la seccion a la que acabas de saltar desde el indice. */
+:target { background: var(--target); border-radius: 4px; }
+
+/* ===== Listas ============================================================ */
+
+ul, ol { margin: 0 0 1.15em; padding-left: 1.6em; }
+li { margin: 0.25em 0; }
+li > ul, li > ol { margin: 0.25em 0; }
+dl { margin: 0 0 1.15em; }
+dt { font-weight: 650; margin-top: 0.8em; }
+dd { margin: 0.2em 0 0 1.4em; color: var(--ink-soft); }
+
+/* Solo el item con checkbox pierde la viñeta. Si se le saca a la lista
+ * entera, un item normal mezclado entre tareas queda sin marcador y se lee
+ * como texto suelto. */
+li.task-list-item { list-style: none; margin-left: -1.35em; }
+.task-list-item { display: flex; align-items: baseline; gap: 0.55em; }
+.task-list-item-checkbox {
+  appearance: none;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  border: 1.5px solid var(--rule-strong);
+  border-radius: 3px;
+  position: relative;
+  top: 0.13em;
+}
+.task-list-item-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.task-list-item-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 0.28em; top: 0.08em;
+  width: 0.26em; height: 0.52em;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+
+/* ===== Cita ============================================================== */
+
+blockquote {
+  margin: 0 0 1.15em;
+  padding: 0.1em 0 0.1em 1.15em;
+  border-left: 3px solid var(--quote-bar);
+  color: var(--ink-soft);
+}
+blockquote > :last-child { margin-bottom: 0; }
+
+/* ===== Codigo ============================================================ */
+
+code, kbd, samp, var {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* Codigo inline. El :not() evita pisar el <code> que va dentro de un <pre>. */
+:not(pre) > code {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 0.15em 0.38em;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+  white-space: break-spaces;
+}
+
+kbd {
+  background: var(--code-bg);
+  border: 1px solid var(--rule-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+}
+
+.code-block, .highlight {
+  position: relative;
+  margin: 0 0 1.3em;
+}
+
+pre {
+  margin: 0;
+  padding: 1em 1.15em;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  /* El bloque scrollea solo: sin esto una linea larga ensancha la hoja
+   * entera y aparece scroll horizontal en toda la pagina. */
+  overflow-x: auto;
+  line-height: 1.55;
+}
+
+pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.855em;
+  white-space: pre;
+}
+
+/* Etiqueta con el lenguaje, arriba a la derecha del bloque.
+ * El z-index es necesario: el <pre> es hijo y se pinta despues, asi que sin
+ * el su fondo tapa la etiqueta. */
+.code-block[data-lang]:not([data-lang=""])::before {
+  content: attr(data-lang);
+  position: absolute;
+  z-index: 1;
+  top: 0.45em;
+  right: 0.7em;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+/* ===== Tablas ============================================================ */
+
+.table-scroll {
+  overflow-x: auto;
+  margin: 0 0 1.3em;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.94em;
+}
+
+th, td {
+  padding: 0.5em 0.8em;
+  border: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th {
+  background: var(--code-bg);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+tbody tr:nth-child(even) { background: color-mix(in srgb, var(--code-bg) 45%, transparent); }
+
+/* ===== Imagenes ========================================================== */
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+figure { margin: 0 0 1.3em; text-align: center; }
+figcaption { font-size: 0.86em; color: var(--ink-soft); margin-top: 0.5em; }
+
+/* Marcador de imagen remota bloqueada. Lo inserta reader.js. */
+.remote-blocked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.55em 0.9em;
+  border: 1px dashed var(--rule-strong);
+  border-radius: 6px;
+  background: var(--code-bg);
+  color: var(--ink-soft);
+  font-size: 0.85em;
+  font-family: var(--font-body);
+}
+
+/* ===== Detalles / desplegables =========================================== */
+
+details {
+  margin: 0 0 1.3em;
+  padding: 0.7em 1em;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--code-bg) 55%, transparent);
+}
+summary { cursor: pointer; font-weight: 600; }
+details[open] > summary { margin-bottom: 0.7em; border-bottom: 1px solid var(--rule); padding-bottom: 0.5em; }
+
+/* ===== Notas al pie ====================================================== */
+
+.footnotes-sep { margin-top: 3.5em; }
+.footnotes { font-size: 0.9em; color: var(--ink-soft); }
+.footnote-ref a { font-size: 0.85em; padding: 0 0.1em; }
+.footnote-backref { text-decoration: none; }
+
+/* ===== Front matter ====================================================== */
+
+.front-matter {
+  margin: 0 0 2.2em;
+  padding: 0.9em 1.1em;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  font-size: 0.9em;
+}
+.front-matter dl { display: grid; grid-template-columns: auto 1fr; gap: 0.2em 0.9em; margin: 0; }
+.front-matter dt { font-weight: 650; color: var(--ink-soft); margin: 0; }
+.front-matter dd { margin: 0; }
+.front-matter pre { background: none; border: 0; padding: 0; font-size: 0.85em; }
+
+/* ===== Mermaid =========================================================== */
+
+pre.mermaid {
+  background: none;
+  border: 0;
+  padding: 0.5em 0;
+  text-align: center;
+  overflow-x: auto;
+}
+pre.mermaid svg { max-width: 100%; height: auto; }
+/* Mientras Mermaid no corrio, el texto del diagrama es ruido: se oculta y
+ * aparece recien cuando hay SVG. Si el script falla, el bloque se marca
+ * .mermaid-error y se vuelve a mostrar como codigo. */
+pre.mermaid:not([data-processed]):not(.mermaid-error) { visibility: hidden; }
+pre.mermaid.mermaid-error {
+  visibility: visible;
+  text-align: left;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-rule);
+  border-radius: 6px;
+  padding: 1em 1.15em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  white-space: pre;
+}
+
+/* ===== KaTeX ============================================================= */
+
+.math.block {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 1.3em 0;
+  text-align: center;
+}
+.math-error {
+  color: var(--danger);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+/* ===== Documento vacio =================================================== */
+
+.empty-doc {
+  color: var(--ink-faint);
+  font-style: italic;
+  text-align: center;
+  padding: 3em 0;
+}
+
+/* ===== Impresion ========================================================= */
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .paper { box-shadow: none; max-width: none; padding: 0; }
+  pre, table, figure, blockquote { break-inside: avoid; }
+  h1, h2, h3, h4 { break-after: avoid; }
+}
