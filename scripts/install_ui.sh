@@ -2,16 +2,20 @@
 # Instala mdreader para el usuario actual: su propio virtualenv bajo
 # ~/.local/share, un comando `mdreader` en ~/.local/bin, un lanzador en la
 # lista de aplicaciones y la asociacion con los archivos .md.
-# Sin root (salvo que pidas --use-dnf) y sin tocar nada fuera de ~/.local.
+# Sin root (salvo que pidas --use-dnf o --use-apt) y sin tocar nada fuera de
+# ~/.local.
 #
 # Sobre PySide6: este proyecto necesita QtWebEngine, que vive en
-# PySide6-Addons y no en PySide6-Essentials. Hay dos caminos y el script
-# prefiere el primero:
+# PySide6-Addons y no en PySide6-Essentials. Hay tres caminos y el script
+# prefiere el del sistema si esta disponible:
 #
 #   1. RPM python3-pyside6 de Fedora: ya trae QtWebEngineWidgets, usa el Qt
 #      del sistema y se actualiza con dnf. El venv se crea con
 #      --system-site-packages para verlo.
-#   2. pip install PySide6: ~250 MB dentro del venv, sin sudo.
+#   2. paquetes python3-pyside6.* de Debian/Ubuntu: mismo trato, pero
+#      repartido en varios .deb (uno por modulo de Qt) que hay que pedir
+#      juntos.
+#   3. pip install PySide6: ~250 MB dentro del venv, sin sudo.
 set -Eeuo pipefail
 
 APP_NAME="mdreader"
@@ -28,7 +32,22 @@ VENV="$APP_INSTALL_DIR/venv"
 LAUNCHER="$INSTALL_DIR/$APP_NAME"
 DESKTOP_FILE="$APPLICATIONS_DIR/$APP_NAME.desktop"
 
-QT_SOURCE="auto"      # auto | dnf | pip
+QT_SOURCE="auto"      # auto | dnf | apt | pip
+
+# Modulos de Qt que usa el codigo (mdreader_ui/*.py): QtCore, QtGui,
+# QtWidgets, QtNetwork, QtWebChannel, QtWebEngineCore, QtWebEngineWidgets.
+# En Debian/Ubuntu cada uno es un .deb aparte y apt no siempre arrastra los
+# que no son dependencia dura de QtWebEngineWidgets (QtNetwork, QtWebChannel),
+# asi que se piden todos explicitamente.
+APT_PACKAGES=(
+  python3-pyside6.qtcore
+  python3-pyside6.qtgui
+  python3-pyside6.qtwidgets
+  python3-pyside6.qtnetwork
+  python3-pyside6.qtwebchannel
+  python3-pyside6.qtwebenginecore
+  python3-pyside6.qtwebenginewidgets
+)
 SET_DEFAULT=1
 
 log()  { printf '\n==> %s\n' "$*"; }
@@ -42,6 +61,7 @@ usage() {
 uso: $0 [opciones]
 
   --use-dnf            instala python3-pyside6 con dnf (pide sudo) y lo reusa
+  --use-apt            instala python3-pyside6.* con apt-get (pide sudo) y lo reusa
   --use-pip            fuerza PySide6 por pip dentro del venv (~250 MB)
   --no-default-handler no se registra como programa por defecto para .md
   --uninstall          quita todo lo instalado
@@ -104,6 +124,13 @@ setup_venv() {
       system_has_webengine || die "python3-pyside6 quedo instalado pero $PYTHON_BIN no lo ve"
       use_system=1
       ;;
+    apt)
+      command -v apt-get >/dev/null 2>&1 || die "--use-apt pero no hay apt-get en el sistema"
+      log "Instalando ${APT_PACKAGES[*]} (trae QtWebEngine, usa el Qt del sistema)"
+      sudo apt-get install -y "${APT_PACKAGES[@]}"
+      system_has_webengine || die "los paquetes quedaron instalados pero $PYTHON_BIN no ve QtWebEngine"
+      use_system=1
+      ;;
     pip)
       use_system=0
       ;;
@@ -113,7 +140,11 @@ setup_venv() {
         use_system=1
       else
         log "Sin QtWebEngine en el sistema: se instala PySide6 por pip (~250 MB)"
-        printf '     (mas liviano: %s --use-dnf, que instala python3-pyside6)\n' "$0"
+        if command -v dnf >/dev/null 2>&1; then
+          printf '     (mas liviano: %s --use-dnf, que instala python3-pyside6)\n' "$0"
+        elif command -v apt-get >/dev/null 2>&1; then
+          printf '     (mas liviano: %s --use-apt, que instala python3-pyside6.*)\n' "$0"
+        fi
         use_system=0
       fi
       ;;
@@ -242,6 +273,7 @@ main() {
   while [ $# -gt 0 ]; do
     case "$1" in
       --use-dnf)            QT_SOURCE="dnf" ;;
+      --use-apt)            QT_SOURCE="apt" ;;
       --use-pip)            QT_SOURCE="pip" ;;
       --no-default-handler) SET_DEFAULT=0 ;;
       --uninstall)          uninstall; return 0 ;;

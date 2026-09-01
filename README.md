@@ -1,6 +1,7 @@
 # mdreader
 
-Lector de Markdown de escritorio para Fedora. Doble click en un `.md` y se abre
+Lector de Markdown de escritorio para Fedora y distros basadas en Debian
+(Ubuntu, Mint, etc.). Doble click en un `.md` y se abre
 como un documento: indice lateral, imagenes, formulas, diagramas y navegacion
 entre archivos.
 
@@ -35,14 +36,15 @@ Atajos: `Ctrl+O` abrir · `Ctrl+W` cerrar pestaña · `Ctrl+B` indice ·
 
 ```bash
 ./scripts/install_ui.sh                       # todo
-./scripts/install_ui.sh --use-dnf             # Qt del sistema, mas liviano
+./scripts/install_ui.sh --use-dnf             # Fedora: Qt del sistema, mas liviano
+./scripts/install_ui.sh --use-apt             # Debian/Ubuntu: Qt del sistema, mas liviano
 ./scripts/install_ui.sh --no-default-handler  # sin robarle el .md a nadie
 ./scripts/install_ui.sh --uninstall
 ```
 
 Deja un venv en `~/.local/share/mdreader/`, el comando en `~/.local/bin/mdreader`
 y el lanzador en `~/.local/share/applications/`. Nada fuera de `~/.local`, y sin
-root salvo que uses `--use-dnf`.
+root salvo que uses `--use-dnf` o `--use-apt`.
 
 ### Sobre PySide6
 
@@ -52,12 +54,19 @@ Este proyecto **necesita QtWebEngine**, que vive en `PySide6-Addons` y no en
 entero: aca el motor de Chromium *es* el producto. Sin el no hay flexbox, ni
 KaTeX, ni Mermaid, y "respetar el diseño del md" no se cumple.
 
-Hay dos caminos y el instalador prefiere el primero:
+Hay tres caminos y el instalador prefiere el del sistema si esta disponible:
 
 1. **`sudo dnf install python3-pyside6`** — el RPM de Fedora ya trae
    `QtWebEngineWidgets`, usa el Qt del sistema y se actualiza con dnf. El venv
    se crea con `--system-site-packages` para verlo.
-2. **`pip install PySide6`** — ~250 MB dentro del venv, sin sudo.
+2. **`sudo apt-get install python3-pyside6.*`** — en Debian/Ubuntu cada modulo
+   de Qt es un paquete separado, asi que `--use-apt` pide de una los que usa
+   el codigo (`qtcore`, `qtgui`, `qtwidgets`, `qtnetwork`, `qtwebchannel`,
+   `qtwebenginecore`, `qtwebenginewidgets`). Mismo trato que con dnf: Qt del
+   sistema, venv con `--system-site-packages`.
+3. **`pip install PySide6`** — ~250 MB dentro del venv, sin sudo. Es lo que
+   usa `--use-pip`, y a lo que cae `auto` si no encuentra QtWebEngine en el
+   sistema y no le pediste `--use-dnf` ni `--use-apt`.
 
 ### Assets vendorizados
 
