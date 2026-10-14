@@ -172,8 +172,9 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m unittest discover -s tests -t .
 ```
 
 `tests/fixtures/completo.md` ejercita todo: front matter, formulas, Mermaid,
-tablas alineadas, task lists, notas al pie, HTML crudo, un `<script>` que debe
-quedar neutralizado, una imagen remota y anclas duplicadas.
+tablas alineadas, task lists con codigo en linea, emojis, notas al pie, HTML
+crudo, un `<script>` que debe quedar neutralizado, una imagen local, una remota
+y anclas duplicadas.
 
 ## Estado
 

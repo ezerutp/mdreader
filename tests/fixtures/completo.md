@@ -43,6 +43,8 @@ def saludar(nombre: str) -> str:
 
 - [ ] pendiente
 - [x] hecho
+- [x] Tarea larga con `codigo` en linea (`uno`, `dos`, `tres`) que tiene que
+  seguir siendo un parrafo y no desarmarse en columnas
 - item normal
   - anidado
 
@@ -57,7 +59,18 @@ def saludar(nombre: str) -> str:
 
 <script>window.pwned = true;</script>
 
+## Emojis
+
+| Accion | Admin | Recepcion |
+|---|:-:|:-:|
+| Cobrar | ✅ | ✅ |
+| Borrar | ✅ | ❌ |
+
+Texto 🚀 🎉, codigo `ok ✅`, tono 👍🏽, bandera 🇵🇪 y aviso ⚠️.
+
 ## Imagenes
+
+![local](local.svg)
 
 ![remota](https://example.com/no-existe.png)
 
