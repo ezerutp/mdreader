@@ -70,8 +70,9 @@ Hay tres caminos y el instalador prefiere el del sistema si esta disponible:
 
 ### Assets vendorizados
 
-KaTeX y Mermaid **no se cargan de un CDN**: se descargan una vez en la
-instalacion a `mdreader/assets/vendor/` (~3 MB) y se sirven localmente.
+KaTeX, Mermaid y la fuente de emojis **no se cargan de un CDN**: se descargan
+una vez en la instalacion a `mdreader/assets/vendor/` (~13 MB) y se sirven
+localmente.
 
 No es una preferencia estetica, es una consecuencia: el lector bloquea las
 peticiones remotas, asi que un KaTeX servido por CDN seria justamente lo que el
@@ -79,6 +80,14 @@ bloqueo rompe. Vendorizados funcionan offline y sin generar trafico.
 
 Estan en `.gitignore` — el repo no guarda binarios, los trae el instalador
 (`scripts/fetch_assets.py`).
+
+### Emojis con fuente propia
+
+Fedora instala Noto Color Emoji en formato COLRv1, y el Chromium de
+QtWebEngine no lo dibuja: los emojis ocupan su lugar pero quedan invisibles.
+Por eso se vendoriza la version CBDT (mapas de bits, ~10 MB) y la hoja de
+estilos la declara como ultima fuente del texto y del codigo. Con
+`unicode-range` el motor solo la carga si el documento tiene emojis.
 
 ## Decisiones de diseño
 
@@ -121,6 +130,10 @@ Mermaid se sirven por `mdasset:`, que para Chromium no es local — en `False`
 esos dos scripts nunca se piden. Quien decide sobre la red es `RemoteBlocker`,
 que ese atributo no puede saltear.
 
+Por lo mismo `LocalContentCanAccessFileUrls` tambien esta en **True**: en
+`False` el documento no puede cargar ni sus propias imagenes locales. Leer otros
+archivos del disco por `fetch` o XHR lo sigue cortando la CSP.
+
 ## Arquitectura
 
 ```
@@ -144,7 +157,7 @@ mdreader_ui/        interfaz Qt
 └── icons.py        icono dibujado, no un PNG en el repo
 ```
 
-El nucleo no importa PySide6. Por eso 61 de las 67 pruebas corren sin Qt; las 6
+El nucleo no importa PySide6. Por eso 62 de las 68 pruebas corren sin Qt; las 6
 de `test_desktop.py` son las unicas que lo necesitan, y escriben en
 directorios temporales — nunca tocan tu `~/.local/share` ni tus asociaciones.
 
@@ -159,8 +172,9 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m unittest discover -s tests -t .
 ```
 
 `tests/fixtures/completo.md` ejercita todo: front matter, formulas, Mermaid,
-tablas alineadas, task lists, notas al pie, HTML crudo, un `<script>` que debe
-quedar neutralizado, una imagen remota y anclas duplicadas.
+tablas alineadas, task lists con codigo en linea, emojis, notas al pie, HTML
+crudo, un `<script>` que debe quedar neutralizado, una imagen local, una remota
+y anclas duplicadas.
 
 ## Estado
 

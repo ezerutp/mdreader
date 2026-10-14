@@ -33,6 +33,14 @@ class TestPagina(unittest.TestCase):
         self.assertNotIn("katex.min.js", self.build("sin formulas"))
         self.assertIn("katex.min.js", self.build("$x^2$"))
 
+    def test_fuente_de_emojis_vendorizada(self):
+        # La CSP solo deja pasar fuentes por mdasset:, asi que la @font-face
+        # tiene que apuntar ahi y no a un archivo del sistema.
+        html = self.build("hola ✅")
+        self.assertIn('font-family: "mdreader emoji"', html)
+        self.assertIn(f"{ASSET_SCHEME}:/vendor/fonts/NotoColorEmoji.ttf", html)
+        self.assertIn(f"font-src {ASSET_SCHEME}:", html)
+
     def test_mermaid_solo_si_hay_diagramas(self):
         if not has_vendor("mermaid.min.js"):
             self.skipTest("assets no descargados (scripts/fetch_assets.py)")

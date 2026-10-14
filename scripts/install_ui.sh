@@ -175,9 +175,9 @@ setup_venv() {
 }
 
 fetch_assets() {
-  # KaTeX y Mermaid no se pueden servir por CDN: el lector bloquea la red por
-  # defecto, asi que se bajan una vez y quedan dentro del paquete.
-  log "Descargando KaTeX y Mermaid (~3 MB)"
+  # KaTeX, Mermaid y los emojis no se pueden servir por CDN: el lector bloquea
+  # la red por defecto, asi que se bajan una vez y quedan dentro del paquete.
+  log "Descargando KaTeX, Mermaid y la fuente de emojis (~13 MB)"
 
   if ! "$VENV/bin/python" "$PROJECT_ROOT/scripts/fetch_assets.py"; then
     warn "no se pudieron descargar: las formulas se veran como TeX y los"

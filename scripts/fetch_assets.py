@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Descarga KaTeX y Mermaid dentro del paquete.
+"""Descarga KaTeX, Mermaid y la fuente de emojis dentro del paquete.
 
 Por que vendorizados y no por CDN: el lector bloquea las peticiones remotas por
 defecto (decision de diseño, ver README). Si KaTeX y Mermaid vinieran de un CDN
@@ -25,10 +25,17 @@ from pathlib import Path
 
 KATEX_VERSION = "0.16.22"
 MERMAID_VERSION = "11.12.0"
+NOTO_EMOJI_VERSION = "v2.047"
 
 CDN = "https://cdn.jsdelivr.net/npm"
 KATEX_BASE = f"{CDN}/katex@{KATEX_VERSION}/dist"
 MERMAID_URL = f"{CDN}/mermaid@{MERMAID_VERSION}/dist/mermaid.min.js"
+# La version CBDT (mapas de bits) y no la COLRv1 que instala Fedora: el
+# Chromium de QtWebEngine no dibuja COLRv1 y los emojis quedan invisibles.
+EMOJI_URL = (
+    f"https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@{NOTO_EMOJI_VERSION}"
+    "/fonts/NotoColorEmoji.ttf"
+)
 
 VENDOR = Path(__file__).resolve().parent.parent / "mdreader" / "assets" / "vendor"
 FONTS = VENDOR / "fonts"
@@ -98,12 +105,18 @@ def main() -> int:
         changed = write(VENDOR / "mermaid.min.js", mermaid, force=args.force)
         print(f"  mermaid.min.js     {human(len(mermaid)):>9}{'' if changed else '  (sin cambios)'}")
 
+        print(f"Noto Color Emoji {NOTO_EMOJI_VERSION}")
+        emoji = fetch(EMOJI_URL)
+        total += len(emoji)
+        changed = write(FONTS / "NotoColorEmoji.ttf", emoji, force=args.force)
+        print(f"  NotoColorEmoji.ttf {human(len(emoji)):>9}{'' if changed else '  (sin cambios)'}")
+
     except (urllib.error.URLError, TimeoutError) as exc:
         print(f"\nError de descarga: {exc}", file=sys.stderr)
         print(
             "Sin estos archivos el lector igual abre: las formulas se ven como\n"
-            "TeX y los diagramas como codigo. Volve a correr el script cuando\n"
-            "tengas red.",
+            "TeX, los diagramas como codigo y los emojis pueden no verse.\n"
+            "Volve a correr el script cuando tengas red.",
             file=sys.stderr,
         )
         return 1
