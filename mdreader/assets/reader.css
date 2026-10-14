@@ -156,16 +156,19 @@ dd { margin: 0.2em 0 0 1.4em; color: var(--ink-soft); }
  * entera, un item normal mezclado entre tareas queda sin marcador y se lee
  * como texto suelto. */
 li.task-list-item { list-style: none; margin-left: -1.35em; }
-.task-list-item { display: flex; align-items: baseline; gap: 0.55em; }
+/* Sangria colgante y no flex: con flex cada trozo de texto y cada `code` del
+ * item se vuelve una columna y el parrafo se desarma. */
+.task-list-item { position: relative; padding-left: 1.55em; }
 .task-list-item-checkbox {
   appearance: none;
   width: 1em;
   height: 1em;
-  flex: 0 0 auto;
+  margin: 0;
   border: 1.5px solid var(--rule-strong);
   border-radius: 3px;
-  position: relative;
-  top: 0.13em;
+  position: absolute;
+  left: 0;
+  top: calc((var(--line) * 1em - 1em) / 2);
 }
 .task-list-item-checkbox:checked {
   background: var(--accent);
