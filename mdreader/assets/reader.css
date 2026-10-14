@@ -5,6 +5,18 @@
  * redefine .paper, sin tocar el HTML que genera render.py.
  */
 
+/* ===== Emojis ============================================================ */
+
+/* El Noto Color Emoji del sistema es COLRv1 y el Chromium de QtWebEngine no lo
+ * dibuja. Este es el CBDT vendorizado; unicode-range hace que solo se cargue
+ * si el documento tiene emojis. */
+@font-face {
+  font-family: "mdreader emoji";
+  src: url("mdasset:/vendor/fonts/NotoColorEmoji.ttf") format("truetype");
+  unicode-range: U+00A9, U+00AE, U+200D, U+203C-3299, U+FE0F, U+1F000-1FAFF,
+    U+E0020-E007F;
+}
+
 /* ===== Tema ============================================================== */
 
 :root {
@@ -30,9 +42,10 @@
   --paper-width: 46rem;
   --body-size: 16.5px;
   --line: 1.72;
-  --font-body: system-ui, "Cantarell", "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-body: system-ui, "Cantarell", "Inter", "Segoe UI", Roboto, sans-serif,
+    "mdreader emoji";
   --font-mono: "MesloLGS NF", "JetBrains Mono", "Fira Code", ui-monospace,
-    "Cascadia Code", Menlo, Consolas, monospace;
+    "Cascadia Code", Menlo, Consolas, monospace, "mdreader emoji";
 }
 
 :root[data-theme="dark"] {
