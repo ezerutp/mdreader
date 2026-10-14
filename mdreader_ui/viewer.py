@@ -169,8 +169,10 @@ class DocumentView(QWebEngineView):
         # JavaScript hace falta para KaTeX, Mermaid y el indice. Lo que llega
         # del documento ya paso por la lista blanca de sanitize.py.
         settings.setAttribute(A.JavascriptEnabled, True)
-        # Un documento no tiene por que leer otros archivos del disco.
-        settings.setAttribute(A.LocalContentCanAccessFileUrls, False)
+        # En False la pagina, que tiene origen file:, no puede cargar ni sus
+        # propias imagenes locales. Leer otros archivos por fetch/XHR lo sigue
+        # cortando la CSP (`default-src 'none'` sin `connect-src`).
+        settings.setAttribute(A.LocalContentCanAccessFileUrls, True)
         # Tiene que estar en True, aunque suene al reves: la pagina se carga con
         # un origen file: y KaTeX/Mermaid se sirven por `mdasset:`, que para
         # Chromium no es local. En False, esos dos scripts nunca se piden.

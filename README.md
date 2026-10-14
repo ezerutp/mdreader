@@ -121,6 +121,10 @@ Mermaid se sirven por `mdasset:`, que para Chromium no es local — en `False`
 esos dos scripts nunca se piden. Quien decide sobre la red es `RemoteBlocker`,
 que ese atributo no puede saltear.
 
+Por lo mismo `LocalContentCanAccessFileUrls` tambien esta en **True**: en
+`False` el documento no puede cargar ni sus propias imagenes locales. Leer otros
+archivos del disco por `fetch` o XHR lo sigue cortando la CSP.
+
 ## Arquitectura
 
 ```
